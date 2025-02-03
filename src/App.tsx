@@ -66,16 +66,16 @@ const App = () => {
             rowSpan="lg:row-span-1 md:row-span-1 row-span-2"
           >
             <List title="RITMO - PC/min">
-              <div className="flex justify-around p-2 bg-green-500 text-lg">
-                <p>ATUAL</p>
+              <div className="flex justify-around p-2 bg-green-500 text-2xl">
+                <p className="font-semibold">ATUAL</p>
                 <p>240</p>
               </div>
-              <div className="flex justify-around p-2 text-lg">
-                <p>DIA</p>
+              <div className="flex justify-around p-2 text-2xl">
+                <p className="font-semibold">DIA</p>
                 <p>345600</p>
               </div>
-              <div className="flex justify-around p-2 text-lg">
-                <p>META</p>
+              <div className="flex justify-around p-2 text-2xl">
+                <p className="font-semibold">META</p>
                 <p>215</p>
               </div>
             </List>
