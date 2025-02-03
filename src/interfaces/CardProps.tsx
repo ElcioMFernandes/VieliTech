@@ -1,5 +1,6 @@
 export interface CardProps {
   color?: string;
+  shadow?: boolean;
   rowSpan?: string;
   colSpan?: string;
   gridRow?: string;
