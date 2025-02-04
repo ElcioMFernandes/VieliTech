@@ -1,139 +1,135 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
-import { Card } from "./components/Card";
-import { List } from "./components/List";
-import { request } from "./hooks/machine";
-import useCurrentTime from "./hooks/datetime";
+import { Indicator } from "./components/Indicator";
+import { Paragraph } from "./components/Paragraph";
 
 const App = () => {
-  const [value, setValue] = useState(0);
-  const [machineName, setMachineName] = useState("Carregando");
-  const currentTime = useCurrentTime();
+  const [enable, setEnable] = useState(false); // Estado para controlar a visibilidade do modal de configurações
+  const [machine, setMachine] = useState("Carregando..."); // Estado para armazenar o nome da máquina
+  const [datetime, setDatetime] = useState("Carregando..."); // Estado para armazenar o horário atual
+  const [performance, setPerformance] = useState(0); // Estado para armazenar a quantidade de peças produzidas
+  const [goal, setGoal] = useState(20); // Estado para armazenar a meta de produção
+  const [rate, setRate] = useState(1000); // Estado para armazenar o tempo para produzir uma peça
+  const [rateGoal, setRateGoal] = useState(55); // Estado para armazenar a meta de PC/Min
+  const [rateDayGoal, setRateDayGoal] = useState(0); // Estado para armazenar a meta do dia
 
-  useEffect(() => {
-    const fetchMachineName = async () => {
-      const name = await request();
-      setMachineName(name);
+  useEffect(() => { // Hook para buscar o nome da máquina
+    const request = async () => { // Requisição HTTP utilizando Axios para buscar o nome da máquina na API externa
+      const response = await axios.get(
+        "https://jsonplaceholder.typicode.com/users/1"
+      );
+      setMachine(response.data.name);
     };
-
-    fetchMachineName();
+    request();
   }, []);
 
-  useEffect(() => {
-    setValue(value + 1);
-  }, [currentTime]);
+  useEffect(() => { // Hook para buscar o horário atual a cada segundo
+    const interval = setInterval(() => {
+      setDatetime(new Date().toLocaleString());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  
+  useEffect(() => { // Hook para simular a performance da máquina, a cada 5 segundos aumenta em 1 a quantidade de peças produzidas
+    const interval = setInterval(() => {
+      setPerformance((prevCount) => prevCount + 1);
+    }, rate);
+
+    return () => clearInterval(interval);
+  }, [rate]);
 
   return (
     <>
-      <div className="grid grid-rows-10 grid-cols-10 h-screen w-screen gap-1 p-2 select-none">
-        <Card rowSpan="row-span-1" colSpan="col-span-10">
-          <Card gridCol="grid-cols-2" color="bg-yellow-300" shadow={true}>
-            <Card>
-              <p className="text-xl font-semibold">{machineName}</p>
-            </Card>
-            <Card>
-              <div className="text-xl font-semibold">
-                {currentTime.toLocaleDateString()}{" "}
-                {currentTime.toLocaleTimeString()}
-              </div>
-            </Card>
-          </Card>
-        </Card>
-        <Card rowSpan="row-span-1" colSpan="col-span-10">
-          <Card color="bg-yellow-300 text-xl font-semibold" shadow={true}>
-            Produto não cadastrado
-          </Card>
-        </Card>
-        <Card
-          rowSpan="row-span-5 lg:row-span-4 md:row-span-4"
-          colSpan="col-span-10"
-          gridCol="lg:grid-cols-4 md:grid-cols-4 grid-cols-1"
-          gridRow="lg:grid-rows-1 md:grid-rows-1 grid-rows-3"
-        >
-          <Card
-            shadow={true}
-            color="bg-yellow-300"
-            colSpan="lg:col-span-3 md:col-span-2 col-span-1"
-          >
-            <div className="flex justify-center items-center">
-              <p className="text-8xl">{value}</p>
-              <p className="text-4xl">PC</p>
+      <div className="h-screen w-screen grid grid-rows-12 p-2 gap-1 select-none">
+        {enable && (
+          <div className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-4 shadow-lg flex flex-col gap-4 rounded-md sahdow border border-neutral-200">
+              <p className="text-lg">Configurações</p>
+              <label htmlFor="rate"> Tempo para uma peça (Em milissegundos) </label>
+              <input
+                id="rate"
+                type="number"
+                value={rate}
+                onChange={(event) => setRate(Number(event.target.value))}
+                className="p-2 focus:outline-none bg-stone-100 rounded-md"
+              />
+              <label htmlFor="goal">Meta de produção</label>
+              <input
+                id="goal"
+                type="number"
+                value={goal}
+                onChange={(event) => setGoal(Number(event.target.value))}
+                className="p-2 focus:outline-none bg-stone-100 rounded-md"
+              />
+              <label htmlFor="rateDayGoal">Meta do dia</label>
+              <input
+                id="rateDayGoal"
+                type="number"
+                value={rateDayGoal}
+                onChange={(event) => setRateDayGoal(Number(event.target.value))}
+                className="p-2 focus:outline-none bg-stone-100 rounded-md"
+              />
+              <label htmlFor="rateGoal">Meta de PC/Min</label>
+              <input
+                id="rateGoal"
+                type="number"
+                value={rateGoal}
+                onChange={(event) => setRateGoal(Number(event.target.value))}
+                className="p-2 focus:outline-none bg-stone-100 rounded-md"
+              />
+              <button
+                className="col-span-2 p-2 mt-2 bg-blue-500 text-white rounded-md" onClick={() => setEnable(false)} > Fechar </button>
             </div>
-          </Card>
-          <Card
-            shadow={true}
-            color="bg-yellow-300"
-            colSpan="lg:col-span-1 md:col-span-2 col-span-1"
-            rowSpan="lg:row-span-1 md:row-span-1 row-span-2"
-          >
-            <List title="RITMO - PC/min">
-              <div className="flex justify-around p-2 bg-green-500 text-2xl">
-                <p className="font-semibold">ATUAL</p>
-                <p>240</p>
-              </div>
-              <div className="flex justify-around p-2 text-2xl">
-                <p className="font-semibold">DIA</p>
-                <p>345600</p>
-              </div>
-              <div className="flex justify-around p-2 text-2xl">
-                <p className="font-semibold">META</p>
-                <p>215</p>
-              </div>
-            </List>
-          </Card>
-        </Card>
-        <Card
-          rowSpan="lg:row-span-2 md:row-span-2 row-span-1"
-          colSpan="col-span-10"
-          gridCol="grid-cols-3"
-        >
-          <Card color="bg-yellow-300" shadow={true}>
-            <List
-              title="META PC"
-              color={value < 544 ? "bg-red-500" : "bg-green-500"}
-            >
-              <p className="text-2xl">544</p>
-            </List>
-          </Card>
-          <Card color="bg-yellow-300" shadow={true}>
-            <List
-              title="META %"
-              color={value < 544 ? "bg-red-500" : "bg-green-500"}
-            >
-              <p className="text-2xl">{((value / 544) * 100).toFixed(2)} %</p>
-            </List>
-          </Card>
-          <Card color="bg-yellow-300" shadow={true}>
-            <List title="Retrabalho">
-              <p className="text-2xl">0.0 %</p>
-            </List>
-          </Card>
-        </Card>
-        <Card
-          rowSpan="row-span-2"
-          colSpan="col-span-10"
-          gridCol="lg:grid-cols-4 md:grid-cols-4 grid-cols-2"
-        >
-          <Card color="bg-yellow-300" shadow={true}>
-            <List title="Disponibilidade">
-              <p className="text-2xl">39.1 %</p>
-            </List>
-          </Card>
-          <Card color="bg-yellow-300" shadow={true}>
-            <List title="Performace">
-              <p className="text-2xl">120.5 %</p>
-            </List>
-          </Card>
-          <Card color="bg-yellow-300" shadow={true}>
-            <List title="Qualidade">
-              <p className="text-2xl">100.0%</p>
-            </List>
-          </Card>
-          <Card color="bg-yellow-300" shadow={true}>
-            <List title="OEE">
-              <p className="text-2xl">47.1 %</p>
-            </List>
-          </Card>
-        </Card>
+          </div>
+        )}
+        <div className="grid grid-cols-2 grid-rows-1 row-span-1 md:row-span-1 lg:row-span-1 gap-1">
+          <p className="grid items-center justify-center text-center h-full shadow-md text-lg md:text-xl lg:text-3xl"
+            onClick={() => setEnable(!enable)}>{machine}</p>
+          <p className="grid items-center justify-center text-center h-full shadow-md text-lg md:text-xl lg:text-3xl">{datetime}</p>
+        </div>
+        <div className="grid grid-cols-1 grid-rows-1 row-span-1 md:row-span-1 lg:row-span-1 gap-1">
+          <p className="grid items-center justify-center text-center h-full shadow-md text-lg md:text-xl lg:text-3xl">
+            Produto não cadastrado
+          </p>
+        </div>
+        <div className="grid grid-cols-2 grid-rows-1 row-span-6 md:row-span-6 lg:row-span-6 gap-1">
+          <p className="grid items-center justify-center text-center h-full shadow-md text-4xl md:text-6xl lg:text-8xl">
+            {performance} PC
+          </p>
+          <ul className="flex flex-col items-center justify-around text-center h-full shadow-md">
+            <p className="text-4xl py-4 w-full">PC/Min</p>
+            <li
+              className={`flex h-full w-full items-center justify-around ${60000 / rate >= rateGoal ? "bg-green-500 text-white" : "bg-red-500 text-white" }`} >
+              <Paragraph text="Atual:" />
+              <Paragraph text={(60000 / rate).toFixed(1)} />
+            </li>
+            <li className="flex h-full w-full items-center justify-around">
+              <Paragraph text="No dia:" />
+              <Paragraph text={rateDayGoal} />
+            </li>
+            <li className="flex h-full w-full items-center justify-around">
+              <Paragraph text="Meta:" />
+              <Paragraph text={rateGoal} />
+            </li>
+          </ul>
+        </div>
+        <div className="row-span-2 md:row-span-2 lg:row-span-2">
+          <div className="grid grid-cols-3 h-full gap-1">
+            <Indicator name="Meta - PC" value={goal} goal={performance} direction="down" />
+            <Indicator name="Meta - %" value={(performance / goal) * 100} goal={100} direction="up" />
+            <Indicator name="Retrabalho" value={0} goal={0} direction="down" />
+          </div>
+        </div>
+        <div className="row-span-2 md:row-span-2 lg:row-span-2">
+          <div className="grid grid-rows-2 grid-cols-2 lg:grid-cols-4 lg:grid-rows-1 h-full gap-1">
+            <Indicator name="Disponibilidade" value={39.1} goal={25} direction="down" />
+            <Indicator name="Performace" value={120.5} goal={75} direction="up" />
+            <Indicator name="Qualidade" value={100.0} goal={80} direction="up" />
+            <Indicator name="OEE" value={47.1} />
+          </div>
+        </div>
       </div>
     </>
   );
