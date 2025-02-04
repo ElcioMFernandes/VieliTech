@@ -17,8 +17,12 @@ export const Indicator = (props: IndicatorProps) => {
             : " text-black"
         } grid grid-rows-2 justify-around items-center text-center shadow-md`}
       >
-        <p className="font-semibold text-lg lg:text-3xl">{props.name}</p>
-        <p className="text-xl lg:text-4xl">{props.value}</p>
+        <p className="font-semibold text-lg md:text-xl lg:text-2xl xl:text-3xl">
+          {props.name}
+        </p>
+        <p className="text-3xl md:text-5xl lg:text-3xl xl:text-6xl">
+          {props.value}
+        </p>
       </div>
     </>
   );
