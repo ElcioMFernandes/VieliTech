@@ -125,7 +125,7 @@ const App = () => {
               }`}
             >
               <Paragraph text="Atual:" />
-              <Paragraph text={(60000 / rate).toFixed(1)} />
+              <Paragraph text={60000 / rate} />
             </li>
             <li className="flex h-full w-full items-center justify-around">
               <Paragraph text="No dia:" />
