@@ -8,9 +8,9 @@ const App = () => {
   const [machine, setMachine] = useState("Carregando..."); // Estado para armazenar o nome da máquina
   const [datetime, setDatetime] = useState("Carregando..."); // Estado para armazenar o horário atual
   const [performance, setPerformance] = useState(0); // Estado para armazenar a quantidade de peças produzidas
-  const [goal, setGoal] = useState(20); // Estado para armazenar a meta de produção
-  const [rate, setRate] = useState(1000); // Estado para armazenar o tempo para produzir uma peça
-  const [rateGoal, setRateGoal] = useState(55); // Estado para armazenar a meta de PC/Min
+  const [goal, setGoal] = useState(200); // Estado para armazenar a meta de produção
+  const [rate, setRate] = useState(2000); // Estado para armazenar o tempo para produzir uma peça
+  const [rateGoal, setRateGoal] = useState(31); // Estado para armazenar a meta de PC/Min
   const [rateDayGoal, setRateDayGoal] = useState(0); // Estado para armazenar a meta do dia
 
   useEffect(() => {
